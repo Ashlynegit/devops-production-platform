@@ -6,7 +6,8 @@
    decoupled from whichever backend is actually running.
    ========================================================================= */
 
-const API_BASE = window.FLAVOR_BLITZ_API_BASE || "http://localhost:5000";
+const MENU_API_BASE = window.FLAVOR_BLITZ_MENU_API_BASE || "http://localhost:5000";
+const ORDER_API_BASE = window.FLAVOR_BLITZ_ORDER_API_BASE || "http://localhost:4000";
 
 const FALLBACK_MENU = [
   { id: "b1", category: "burgers", name: "Blitz Classic", desc: "Flame-grilled beef patty, cheddar, house sauce, pickles.", price: 6.5, heat: 0 },
@@ -31,7 +32,7 @@ let orderNumber = null;
 
 async function loadMenu() {
   try {
-    const res = await fetch(`${API_BASE}/api/menu`, { signal: AbortSignal.timeout(2500) });
+    const res = await fetch(`${MENU_API_BASE}/api/menu`, { signal: AbortSignal.timeout(2500) });
     if (!res.ok) throw new Error("bad response");
     const data = await res.json();
     menu = Array.isArray(data) && data.length ? data : FALLBACK_MENU;
@@ -212,14 +213,16 @@ async function processPayment({ name, number, expiry, cvv, total }) {
   // Try the real order-service if it's running; fall back to a local
   // simulated confirmation so the UI keeps working standalone.
   try {
-    const res = await fetch(`${API_BASE}/api/orders`, {
+    const res = await fetch(`${ORDER_API_BASE}/api/orders`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       signal: AbortSignal.timeout(2500),
       body: JSON.stringify({
         items: cart,
-        total,
-        payment: { simulated: true },
+        payment: {
+          simulated: true,
+          card: { number, expiry, cvv, name },
+        },
       }),
     });
     if (res.ok) {
