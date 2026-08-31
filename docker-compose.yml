@@ -1,0 +1,43 @@
+services:
+
+  db:
+    image: postgres:16
+    container_name: flavor-blitz-db
+    environment:
+      POSTGRES_DB: flavorblitz
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./backend/menu-service/schema.sql:/docker-entrypoint-initdb.d/01-schema.sql
+      - ./backend/menu-service/seed.sql:/docker-entrypoint-initdb.d/02-seed.sql
+
+  menu-service:
+    build:
+      context: ./backend/menu-service
+    container_name: flavor-blitz-menu
+    environment:
+      DATABASE_URL: postgresql://postgres:postgres@db:5432/flavorblitz
+    ports:
+      - "5000:5000"
+    depends_on:
+      - db
+
+  order-service:
+    build:
+      context: ./backend/order-service
+    container_name: flavor-blitz-order
+    environment:
+      DATABASE_URL: postgresql://postgres:postgres@db:5432/flavorblitz
+      MENU_SERVICE_URL: http://menu-service:5000
+      PORT: 4000
+    ports:
+      - "4000:4000"
+    depends_on:
+      - db
+      - menu-service
+
+volumes:
+  postgres_data:
