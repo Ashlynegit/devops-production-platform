@@ -1,2 +1,5 @@
-name = "flavor-blitz-ashlyne"
-pages_build_output_dir = "frontend/app"
+name = "flavor-blitz-devai"
+compatibility_date = "2026-08-30"
+
+[assets]
+directory = "./frontend/app"
