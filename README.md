@@ -1,59 +1,267 @@
-
 # 🍔 Flavor Blitz
 
 **AI-native ordering infrastructure for African food businesses.**
 
-Flavor Blitz is a full-stack restaurant ordering platform — built as a hands-on DevOps and software engineering project, now evolving into a real product aimed at a real problem: small African food businesses need simple, affordable digital ordering.
+Flavor Blitz is a full-stack restaurant ordering platform — built as a hands-on DevOps and software engineering project, now evolving into a real product aimed at a real problem: small African food businesses need simple, affordable digital ordering infrastructure.
 
-> **Status:** Early-stage prototype, actively in development. Not a demo shell — real services, real database, real containers.
+**Status:** Early-stage prototype, actively in development. Not a demo shell — real services, real database, real containers.
 
 ---
 
-## What's built
+## 🚀 Project Links
 
-| Layer | Tech |
-|---|---|
-| Frontend | HTML / CSS / JavaScript — menu, cart, simulated checkout |
-| Menu Service | Python (Flask) + PostgreSQL — `/api/menu`, `/health` |
-| Order Service | Node.js (Express) + PostgreSQL — `/api/orders`, server-side pricing |
-| Database | PostgreSQL (raw SQL, no ORM) |
-| Containerization | Docker + Docker Compose (per-service Dockerfiles, healthchecks) |
-| Payments | Simulated checkout (Luhn-validated), designed to swap in a real gateway |
+**Source Code:**
+https://github.com/Ashlynegit/devops-production-platform
 
-Two backend services are deliberately separate microservices — the order service never touches menu data directly, it calls the menu service over HTTP for authoritative prices and recalculates totals server-side.
+**Live Deployment:**
+https://flavor-blitz-devaidev.ashlynechiweshe1.workers.dev/
 
-## Where it's going
+**Pitch Deck:**
+https://docs.google.com/presentation/d/1FJKdRGUe4OrBHZ6hqk4ybBB4ohi2qwtX/edit?usp=sharing
 
-Flavor Blitz started as a DevOps portfolio project. Building it surfaced a bigger question: how do small food businesses in Africa accept digital orders without expensive technology?
+The live deployment is currently being developed and validated. The GitHub repository contains the complete project architecture and instructions for running the system locally.
 
-**Roadmap:**
-- ✅ Working ordering prototype (frontend + two backend microservices + Postgres)
-- ✅ Dockerized, container-per-service architecture
-- 🔜 Public deployment, CI/CD, observability
-- 🔜 **Gemini-powered conversational ordering** — natural-language and voice
-- 🔜 WhatsApp ordering integration
-- 🔜 Local-language ordering (Shona, Ndebele)
-- 🔜 AI-driven demand forecasting and stock insights
-- 🔜 Kubernetes + Helm for multi-restaurant scale
+---
 
-## Why this project
+## What's Built
 
-This isn't "add AI to an app." The goal is to prove a genuinely useful AI-native workflow for a real operational problem — restaurant ordering — in a market (African SMEs) that's usually underserved by existing restaurant tech.
+| Layer            | Technology                                                              |
+| ---------------- | ----------------------------------------------------------------------- |
+| Frontend         | HTML / CSS / JavaScript — menu, cart, simulated checkout                |
+| Menu Service     | Python (Flask) + PostgreSQL — `/api/menu`, `/health`                    |
+| Order Service    | Node.js (Express) + PostgreSQL — `/api/orders`, server-side pricing     |
+| Database         | PostgreSQL (raw SQL, no ORM)                                            |
+| Containerization | Docker + Docker Compose                                                 |
+| Architecture     | Two independent backend microservices                                   |
+| Payments         | Simulated checkout (Luhn-validated), designed to swap in a real gateway |
 
-Built solo, end-to-end: frontend, two backend services, database design, containerization, and (next) CI/CD and cloud deployment.
+The backend is intentionally separated into microservices.
 
-## Running locally
+The order service does not directly access menu data. Instead, it communicates with the menu service over HTTP to obtain authoritative menu information and then recalculates order totals server-side.
 
-```bash
-git clone https://github.com/Ashlynegit/devops-production-platform.git
-cd devops-production-platform
-docker compose up --build
+This provides a foundation for independently deploying, scaling, monitoring, and eventually expanding each service.
+
+---
+
+## 🐳 Containerized Architecture
+
+The project uses Docker Compose to run the complete application stack as multiple containers:
+
+```text
+                    ┌─────────────────────┐
+                    │      Frontend       │
+                    │   HTML/CSS/JS       │
+                    └──────────┬──────────┘
+                               │
+                               ▼
+                    ┌─────────────────────┐
+                    │    Order Service    │
+                    │ Node.js / Express   │
+                    │      Port 4000      │
+                    └──────────┬──────────┘
+                               │
+                               │ HTTP
+                               ▼
+                    ┌─────────────────────┐
+                    │    Menu Service     │
+                    │ Python / Flask      │
+                    │      Port 5000      │
+                    └──────────┬──────────┘
+                               │
+                               ▼
+                    ┌─────────────────────┐
+                    │     PostgreSQL      │
+                    │      Port 5432      │
+                    └─────────────────────┘
 ```
 
-Frontend: `http://localhost:3000` (or configured port)
-Menu API: `http://localhost:5000/api/menu`
-Order API: `http://localhost:4000/api/orders`
+Docker Compose provides the internal service networking required for the microservices to communicate using service names rather than hard-coded IP addresses.
 
 ---
 
-📍 Harare, Zimbabwe · Built by [Ashlyne](https://github.com/Ashlynegit)
+## 📡 API Endpoints
+
+### Menu Service
+
+**Health check:**
+
+```http
+GET /health
+```
+
+**Menu:**
+
+```http
+GET /api/menu
+```
+
+Example:
+
+```text
+http://localhost:5000/api/menu
+```
+
+### Order Service
+
+**Health check:**
+
+```http
+GET /health
+```
+
+**Orders:**
+
+```http
+POST /api/orders
+```
+
+Example:
+
+```text
+http://localhost:4000/api/orders
+```
+
+---
+
+## 🗄️ Database
+
+Flavor Blitz uses PostgreSQL as its persistent data layer.
+
+The current database contains the restaurant menu and supports the backend services through database connections supplied via environment variables.
+
+The project deliberately uses raw SQL rather than an ORM at this stage so that the database interaction remains explicit and easy to reason about.
+
+---
+
+## 🧠 Where It's Going
+
+Flavor Blitz started as a DevOps portfolio project.
+
+Building the system raised a bigger question:
+
+**How can small food businesses across Africa accept digital orders without needing expensive restaurant technology?**
+
+The long-term goal is to turn the ordering infrastructure into an AI-native platform that can work across different African food businesses and eventually support conversational, voice, and local-language ordering.
+
+### Roadmap
+
+* ✅ Working ordering prototype
+* ✅ Frontend + two backend microservices
+* ✅ PostgreSQL database
+* ✅ Dockerized services
+* ✅ Docker Compose orchestration
+* 🔜 Production-ready public deployment
+* 🔜 CI/CD pipeline
+* 🔜 Observability and monitoring
+* 🔜 Gemini-powered conversational ordering
+* 🔜 Voice-based ordering
+* 🔜 WhatsApp ordering integration
+* 🔜 Local-language ordering — Shona and Ndebele
+* 🔜 AI-driven demand forecasting
+* 🔜 AI-assisted stock insights
+* 🔜 Kubernetes + Helm for multi-restaurant scale
+
+---
+
+## 🤖 AI-Native Direction
+
+The objective is not simply to "add AI to an existing restaurant application."
+
+The longer-term vision is to make AI part of the actual ordering workflow.
+
+A customer could eventually interact with a restaurant using natural language or voice:
+
+```text
+Customer:
+
+"I want a burger, chips and a cold drink.
+Make the burger spicy."
+
+              ↓
+
+        AI ordering layer
+
+              ↓
+
+    Understands intent
+    Selects menu items
+    Handles modifications
+    Confirms order
+
+              ↓
+
+        Order Service
+
+              ↓
+
+          Database
+```
+
+The next AI development phase will explore Google's Gemini models for conversational ordering, voice interaction, menu understanding, and operational intelligence.
+
+---
+
+## 🌍 African Market Focus
+
+Flavor Blitz is being developed with African small and medium-sized food businesses in mind.
+
+Potential use cases include:
+
+* Takeaway restaurants
+* Fast-food businesses
+* Food kiosks
+* Small independent restaurants
+* Home-based food businesses
+* Local delivery businesses
+
+The platform is designed around the idea that digital ordering should be simple, affordable, mobile-friendly, and adaptable to local markets.
+
+Future development will explore:
+
+* Local payment gateways
+* WhatsApp-based ordering
+* Local languages
+* Delivery-distance calculations
+* Tips and add-ons
+* Multi-restaurant support
+* AI-assisted business insights
+
+---
+
+## 🛠️ DevOps Engineering
+
+Flavor Blitz is also being used as a practical environment for developing real DevOps engineering skills.
+
+The project currently covers:
+
+* Linux / WSL
+* Git and GitHub
+* Docker
+* Docker Compose
+* Container networking
+* PostgreSQL
+* Python
+* Node.js
+* REST APIs
+* Environment-based configuration
+* Microservice architecture
+
+Planned infrastructure work includes:
+
+* CI/CD
+* Cloud deployment
+* Observability
+* Infrastructure as Code
+* Kubernetes
+* Helm
+* Production deployment practices
+
+---
+
+## 💻 Running Locally
+
+### Clone the repository
+
+```bash
+git clone https://github.com/Ash
+```
