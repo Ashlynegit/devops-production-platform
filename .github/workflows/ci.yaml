@@ -64,11 +64,8 @@ jobs:
 
       - name: Build Docker image
         run: |
-          IMAGE_NAME=$(echo "ghcr.io/${{ github.repository }}" | tr '[:upper:]' '[:lower:]')
-          docker build \
-            -t "$IMAGE_NAME:${{ github.sha }}" \
-            -t "$IMAGE_NAME:latest" \
-            .
+          docker  compose build
+           
 
       - name: Push Docker image
         run: |
