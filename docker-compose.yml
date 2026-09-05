@@ -17,8 +17,6 @@ services:
   menu-service:
     image: ghcr.io/ashlynegit/devops-production-platform-menu-service:latest
     build:
-      context: ./backend/menu-service 
-    build:
       context: ./backend/menu-service
     container_name: flavor-blitz-menu
     environment:
