@@ -1,3 +1,14 @@
+ '''
+ To run your frontend:
+
+cd C:\Users\dell\Documents\Ashlyne\Portifolio\Project\devops-production-platform\frontend\app
+python -m http.server 3000
+
+
+docker compose up --build
+
+'''
+
 # 🍔 Flavor Blitz
 
 **AI-native ordering infrastructure for African food businesses.**
